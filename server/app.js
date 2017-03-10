@@ -25,6 +25,8 @@ var handleTask = function(task, socket){
             output: "Received url to crawl: " + task.url
         }
 
+
+
         sendResponse(socket, 'response', info);
     }
 
