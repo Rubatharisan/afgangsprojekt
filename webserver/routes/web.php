@@ -18,3 +18,4 @@ Route::get('/', function () {
 Route::get('/jupiter', function(){
     return view('jupiter/partials/main');
 });
+

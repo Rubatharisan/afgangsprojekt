@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 
 io.on('connection', function(socket){
     console.log('A user connected');
+
     socket.emit('response', { output: 'You succesfully connected to the server' });
 
     socket.on('request', function (task) {
@@ -24,7 +25,6 @@ var handleTask = function(task, socket){
         var info = {
             output: "Received url to crawl: " + task.url
         }
-
 
 
         sendResponse(socket, 'response', info);
