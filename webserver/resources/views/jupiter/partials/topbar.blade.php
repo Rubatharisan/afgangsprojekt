@@ -13,9 +13,9 @@
             <ul class="nav navbar-nav navbar-right">
                 <li><a id="scanButton">Scan</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
+            <div class="navbar-form navbar-right">
                 <input id="urlInput" type="text" class="form-control" placeholder="URL..." style="width: 800px;">
-            </form>
+            </div>
         </div>
     </div>
 </nav>

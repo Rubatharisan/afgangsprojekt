@@ -11,9 +11,12 @@ var appendOutput = function(response){
 }
 
 $('#scanButton').on('click', function(){
+
+	var url = $('#urlInput').val();
+
     var crawl = {
         action: 'crawl',
-        url: 'http://morningcheck.dk'
+        url: url
     }
 
     sendMessage('request', crawl);
