@@ -48,18 +48,30 @@ var wedis = {
 		addWork : function(cUrl, callback){
 
 			// console.log("Added work to crawler");
-
-			client.set(cUrl, 'inqueue', function(){
-				console.log(cUrl + " added to queue");
-				client.lpush(crawlersWaitQueue, cUrl, function(){
-					pub.publish('crawlers', true);
-				});
+			client.get(cUrl, function(err, reply){
+				if(reply == null || reply == "null"){
+					console.log(typeof reply);
+					console.log(reply == null);
+					console.log(reply == "null");
+					process.exit();
+					client.set(cUrl, 'inqueue', function(){
+						console.log(cUrl + " added to queue");
+						client.lpush(crawlersWaitQueue, cUrl, function(){
+							pub.publish('crawlers', true);
+						});
+					});
+				}
 			});
+			
 		},
 
 		getWork : function(callback){
 	    	client.rpoplpush(crawlersWaitQueue, crawlersWorkQueue, function(err, cUrl){
-	    		callback(cUrl);
+				client.get(cUrl, function(err, reply){
+					if(reply == 'inqueue'){
+			    		callback(cUrl);
+					}
+				});
 	    	});
 		}
 	},

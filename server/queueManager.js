@@ -15,7 +15,7 @@ var checkLink = function(url){
 	cUrl = wutil.cleanUrl(url);
 
 	wedis.exists(cUrl, function(reply){
-		if(reply == true || reply == "inqueue" || reply == "crawled" || reply != null){
+		if(reply != null){
 			console.log(cUrl + " already exists in Redis");
 		} else {
 			wedis.crawler.addWork(cUrl);
