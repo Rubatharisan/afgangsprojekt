@@ -4,6 +4,7 @@ var redis = require("redis"),
 var pub = redis.createClient();
 var sub = redis.createClient();
 
+
 const crawlersWaitQueue = "crawlers:waitQueue";
 const crawlersWorkQueue = "crawlers:workQueue";
 
@@ -14,7 +15,19 @@ var wedis = {
 	},
 
 	addToQueue : function(cUrl){
-	    pub.publish("addToQueue", cUrl);
+		// client.get(cUrl, function(err, reply){
+		// 	if(reply == null || reply == "null"){
+	 //    		pub.publish("addToQueue", cUrl);
+	 //    	}
+	 //    });
+	 client.exists(cUrl, function(err, msg){
+	 	if(msg == 0){
+	 		client.set(cUrl, 'received', function(){
+	     		pub.publish("addToQueue", cUrl);
+			});
+	 	}
+	 });
+	 
 	},
 
 	setTries : function(cUrl){
@@ -46,29 +59,22 @@ var wedis = {
 	crawler : {
 
 		addWork : function(cUrl, callback){
+			console.log(cUrl);
 
-			// console.log("Added work to crawler");
 			client.get(cUrl, function(err, reply){
-				if(reply == null || reply == "null"){
-					console.log(typeof reply);
-					console.log(reply == null);
-					console.log(reply == "null");
-					process.exit();
-					client.set(cUrl, 'inqueue', function(){
+				if(reply != 'inqueue' && reply != 'processing' && reply != 'crawled'){
+					client.lpush(crawlersWaitQueue, cUrl, function(){
 						console.log(cUrl + " added to queue");
-						client.lpush(crawlersWaitQueue, cUrl, function(){
-							pub.publish('crawlers', true);
-						});
+						pub.publish('crawlers', true);
 					});
 				}
 			});
-			
 		},
 
 		getWork : function(callback){
 	    	client.rpoplpush(crawlersWaitQueue, crawlersWorkQueue, function(err, cUrl){
 				client.get(cUrl, function(err, reply){
-					if(reply == 'inqueue'){
+					if(reply == 'received'){
 			    		callback(cUrl);
 					}
 				});
@@ -101,7 +107,7 @@ var wedis = {
 
 	flush : function(){
 		client.flushdb();
-	}
+	},
 
 };
 

@@ -3,6 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var wedis = require('./lib/wedis');
+var wutil = require('./lib/wutil');
 
 console.log("######");
 console.log("## Booted app.js");
@@ -30,10 +31,11 @@ var handleTask = function(task, socket){
     if(task.action == 'crawl'){
 
         var info = {
-            output: "URL: " + normalizeUrl(task.url)
+            output: "URL: " + wutil.cleanUrl(task.url)
         }
 
-        wedis.addToQueue(normalizeUrl(task.url));
+        wedis.flush();
+        wedis.addToQueue(wutil.cleanUrl(task.url));
 
         sendResponse(socket, 'response', info);
     }
